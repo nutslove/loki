@@ -222,6 +222,146 @@ func Test_detectLogLevelFromLogEntry(t *testing.T) {
 			expectedLogLevel: constants.LogLevelWarn,
 		},
 		{
+			name: "non otlp with debug keyword in log line",
+			entry: logproto.Entry{
+				Line: "this is a debug message",
+			},
+			expectedLogLevel: constants.LogLevelDebug,
+		},
+		{
+			name: "non otlp with DEBUG keyword in log line",
+			entry: logproto.Entry{
+				Line: "this is a DEBUG message",
+			},
+			expectedLogLevel: constants.LogLevelDebug,
+		},
+		{
+			name: "non otlp with debug: prefix in log line",
+			entry: logproto.Entry{
+				Line: "debug: something happened",
+			},
+			expectedLogLevel: constants.LogLevelDebug,
+		},
+		{
+			name: "non otlp with DEBUG: prefix in log line",
+			entry: logproto.Entry{
+				Line: "DEBUG: something happened",
+			},
+			expectedLogLevel: constants.LogLevelDebug,
+		},
+		{
+			name: "non otlp with critical keyword in log line",
+			entry: logproto.Entry{
+				Line: "this is a critical message",
+			},
+			expectedLogLevel: constants.LogLevelUnknown,
+		},
+		{
+			name: "non otlp with CRITICAL keyword in log line",
+			entry: logproto.Entry{
+				Line: "this is a CRITICAL message",
+			},
+			expectedLogLevel: constants.LogLevelUnknown,
+		},
+		{
+			name: "non otlp with critical: prefix in log line",
+			entry: logproto.Entry{
+				Line: "critical: something happened",
+			},
+			expectedLogLevel: constants.LogLevelCritical,
+		},
+		{
+			name: "non otlp with CRITICAL: prefix in log line",
+			entry: logproto.Entry{
+				Line: "CRITICAL: something happened",
+			},
+			expectedLogLevel: constants.LogLevelCritical,
+		},
+		{
+			name: "non otlp with [debug] bracket pattern in log line",
+			entry: logproto.Entry{
+				Line: "[debug] this is a debug message",
+			},
+			expectedLogLevel: constants.LogLevelDebug,
+		},
+		{
+			name: "non otlp with [DEBUG] bracket pattern in log line",
+			entry: logproto.Entry{
+				Line: "[DEBUG] this is a debug message",
+			},
+			expectedLogLevel: constants.LogLevelDebug,
+		},
+		{
+			name: "non otlp with [critical] bracket pattern in log line",
+			entry: logproto.Entry{
+				Line: "[critical] this is a critical message",
+			},
+			expectedLogLevel: constants.LogLevelCritical,
+		},
+		{
+			name: "non otlp with [CRITICAL] bracket pattern in log line",
+			entry: logproto.Entry{
+				Line: "[CRITICAL] this is a critical message",
+			},
+			expectedLogLevel: constants.LogLevelCritical,
+		},
+		{
+			name: "non otlp with [info] bracket pattern in log line",
+			entry: logproto.Entry{
+				Line: "[info] this is an info message",
+			},
+			expectedLogLevel: constants.LogLevelInfo,
+		},
+		{
+			name: "non otlp with [INFO] bracket pattern in log line",
+			entry: logproto.Entry{
+				Line: "[INFO] this is an info message",
+			},
+			expectedLogLevel: constants.LogLevelInfo,
+		},
+		{
+			name: "non otlp with [warn] bracket pattern in log line",
+			entry: logproto.Entry{
+				Line: "[warn] this is a warning message",
+			},
+			expectedLogLevel: constants.LogLevelWarn,
+		},
+		{
+			name: "non otlp with [WARNING] bracket pattern in log line",
+			entry: logproto.Entry{
+				Line: "[WARNING] this is a warning message",
+			},
+			expectedLogLevel: constants.LogLevelWarn,
+		},
+		{
+			name: "non otlp with [error] bracket pattern in log line",
+			entry: logproto.Entry{
+				Line: "[error] this is an error message",
+			},
+			expectedLogLevel: constants.LogLevelError,
+		},
+		{
+			name: "non otlp with [ERROR] bracket pattern in log line",
+			entry: logproto.Entry{
+				Line: "[ERROR] this is an error message",
+			},
+			expectedLogLevel: constants.LogLevelError,
+		},
+		{
+			name: "non otlp with [err] bracket pattern in log line",
+			entry: logproto.Entry{
+				Line: "[err] this is an error message",
+			},
+			expectedLogLevel: constants.LogLevelError,
+		},
+		{
+			name: "non otlp with [ERR] bracket pattern in log line",
+			entry: logproto.Entry{
+				Line: "[ERR] this is an error message",
+			},
+			expectedLogLevel: constants.LogLevelError,
+		},
+		{
 			name: "json log line with an error",
 			entry: logproto.Entry{
 				Line: `{"foo":"bar","msg":"message with keyword error but it should not get picked up","level":"critical"}`,
@@ -326,6 +466,20 @@ func Test_detectLogLevelFromLogEntry(t *testing.T) {
 			},
 			expectedLogLevel: constants.LogLevelInfo,
 		},
+		{
+			name: "logfmt log line with a info with short level",
+			entry: logproto.Entry{
+				Line: `FOO=bar MSG="message that should qualify to unknown when there is no level defined" LEVEL=Inf`,
+			},
+			expectedLogLevel: constants.LogLevelInfo,
+		},
+		{
+			name: "logfmt log line with a info with full level",
+			entry: logproto.Entry{
+				Line: `FOO=bar MSG="message that should qualify to unknown when there is no level defined" LEVEL=Information`,
+			},
+			expectedLogLevel: constants.LogLevelInfo,
+		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			detectedLogLevel := ld.detectLogLevelFromLogEntry(tc.entry, logproto.FromLabelAdaptersToLabels(tc.entry.StructuredMetadata))
@@ -385,6 +539,76 @@ func Test_detectLogLevelFromLogEntryWithCustomLabels(t *testing.T) {
 				Line: "this is a warning log",
 			},
 			expectedLogLevel: constants.LogLevelWarn,
+		},
+		{
+			name: "non otlp with debug keyword in log line",
+			entry: logproto.Entry{
+				Line: "this is a debug message",
+			},
+			expectedLogLevel: constants.LogLevelDebug,
+		},
+		{
+			name: "non otlp with DEBUG keyword in log line",
+			entry: logproto.Entry{
+				Line: "this is a DEBUG message",
+			},
+			expectedLogLevel: constants.LogLevelDebug,
+		},
+		{
+			name: "non otlp with debug: prefix in log line",
+			entry: logproto.Entry{
+				Line: "debug: something happened",
+			},
+			expectedLogLevel: constants.LogLevelDebug,
+		},
+		{
+			name: "non otlp with DEBUG: prefix in log line",
+			entry: logproto.Entry{
+				Line: "DEBUG: something happened",
+			},
+			expectedLogLevel: constants.LogLevelDebug,
+		},
+		{
+			name: "non otlp with critical keyword in log line",
+			entry: logproto.Entry{
+				Line: "this is a critical message",
+			},
+			expectedLogLevel: constants.LogLevelUnknown,
+		},
+		{
+			name: "non otlp with CRITICAL keyword in log line",
+			entry: logproto.Entry{
+				Line: "this is a CRITICAL message",
+			},
+			expectedLogLevel: constants.LogLevelUnknown,
+		},
+		{
+			name: "non otlp with critical: prefix in log line",
+			entry: logproto.Entry{
+				Line: "critical: something happened",
+			},
+			expectedLogLevel: constants.LogLevelCritical,
+		},
+		{
+			name: "non otlp with CRITICAL: prefix in log line",
+			entry: logproto.Entry{
+				Line: "CRITICAL: something happened",
+			},
+			expectedLogLevel: constants.LogLevelCritical,
+		},
+		{
+			name: "non otlp with [debug] bracket pattern in custom test",
+			entry: logproto.Entry{
+				Line: "[debug] this is a debug message with custom fields",
+			},
+			expectedLogLevel: constants.LogLevelDebug,
+		},
+		{
+			name: "non otlp with [CRITICAL] bracket pattern in custom test",
+			entry: logproto.Entry{
+				Line: "[CRITICAL] this is a critical message with custom fields",
+			},
+			expectedLogLevel: constants.LogLevelCritical,
 		},
 		{
 			name: "json log line with an error",
@@ -542,9 +766,9 @@ func Test_DetectGenericFields(t *testing.T) {
 	}{
 		{
 			name: "no match",
-			labels: labels.Labels{
-				{Name: "env", Value: "prod"},
-			},
+			labels: labels.FromStrings(
+				"env", "prod",
+			),
 			entry: push.Entry{
 				Line:               "log line does not match",
 				StructuredMetadata: push.LabelsAdapter{},
@@ -553,10 +777,10 @@ func Test_DetectGenericFields(t *testing.T) {
 		},
 		{
 			name: "stream label matches",
-			labels: labels.Labels{
-				{Name: "trace_id", Value: "8c5f2ecbade6f01d"},
-				{Name: "tenant_id", Value: "fake"},
-			},
+			labels: labels.FromStrings(
+				"trace_id", "8c5f2ecbade6f01d",
+				"tenant_id", "fake",
+			),
 			entry: push.Entry{
 				Line:               "log line does not match",
 				StructuredMetadata: push.LabelsAdapter{},
@@ -568,9 +792,9 @@ func Test_DetectGenericFields(t *testing.T) {
 		},
 		{
 			name: "metadata matches",
-			labels: labels.Labels{
-				{Name: "env", Value: "prod"},
-			},
+			labels: labels.FromStrings(
+				"env", "prod",
+			),
 			entry: push.Entry{
 				Line: "log line does not match",
 				StructuredMetadata: push.LabelsAdapter{
@@ -585,9 +809,9 @@ func Test_DetectGenericFields(t *testing.T) {
 		},
 		{
 			name: "logline (logfmt) matches",
-			labels: labels.Labels{
-				{Name: "env", Value: "prod"},
-			},
+			labels: labels.FromStrings(
+				"env", "prod",
+			),
 			entry: push.Entry{
 				Line:               `msg="this log line matches" trace_id="8c5f2ecbade6f01d" org_id=fake duration=1h`,
 				StructuredMetadata: push.LabelsAdapter{},
@@ -599,9 +823,9 @@ func Test_DetectGenericFields(t *testing.T) {
 		},
 		{
 			name: "logline (logfmt) matches multiple fields",
-			labels: labels.Labels{
-				{Name: "env", Value: "prod"},
-			},
+			labels: labels.FromStrings(
+				"env", "prod",
+			),
 			entry: push.Entry{
 				Line:               `msg="this log line matches" tenant_id="fake_a" org_id=fake_b duration=1h`,
 				StructuredMetadata: push.LabelsAdapter{},
@@ -612,9 +836,9 @@ func Test_DetectGenericFields(t *testing.T) {
 		},
 		{
 			name: "logline (json) matches",
-			labels: labels.Labels{
-				{Name: "env", Value: "prod"},
-			},
+			labels: labels.FromStrings(
+				"env", "prod",
+			),
 			entry: push.Entry{
 				Line:               `{"msg": "this log line matches", "trace_id": "8c5f2ecbade6f01d", "org_id": "fake", "duration": "1s"}`,
 				StructuredMetadata: push.LabelsAdapter{},
@@ -626,9 +850,9 @@ func Test_DetectGenericFields(t *testing.T) {
 		},
 		{
 			name: "logline (json) matches multiple fields",
-			labels: labels.Labels{
-				{Name: "env", Value: "prod"},
-			},
+			labels: labels.FromStrings(
+				"env", "prod",
+			),
 			entry: push.Entry{
 				Line:               `{"msg": "this log line matches", "tenant_id": "fake_a", "org_id": "fake_b", "duration": "1s"}`,
 				StructuredMetadata: push.LabelsAdapter{},
@@ -639,9 +863,9 @@ func Test_DetectGenericFields(t *testing.T) {
 		},
 		{
 			name: "logline matches jsonpath",
-			labels: labels.Labels{
-				{Name: "env", Value: "prod"},
-			},
+			labels: labels.FromStrings(
+				"env", "prod",
+			),
 			entry: push.Entry{
 				Line:               `{"product": {"details": "product details", "id": "P2024/01"}}`,
 				StructuredMetadata: push.LabelsAdapter{},

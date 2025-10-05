@@ -3,8 +3,8 @@ package manifests
 import (
 	"reflect"
 
+	"dario.cat/mergo"
 	"github.com/ViaQ/logerr/v2/kverrors"
-	"github.com/imdario/mergo"
 	routev1 "github.com/openshift/api/route/v1"
 	cloudcredentialv1 "github.com/openshift/cloud-credential-operator/pkg/apis/cloudcredential/v1"
 	monitoringv1 "github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring/v1"
@@ -146,7 +146,7 @@ func MutateFuncFor(existing, desired client.Object, depAnnotations map[string]st
 	}
 }
 
-func mergeWithOverride(dst, src interface{}) error {
+func mergeWithOverride(dst, src any) error {
 	err := mergo.Merge(dst, src, mergo.WithOverride)
 	if err != nil {
 		return kverrors.Wrap(err, "unable to mergeWithOverride", "dst", dst, "src", src)

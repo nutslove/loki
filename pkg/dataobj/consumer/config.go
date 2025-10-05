@@ -4,22 +4,24 @@ import (
 	"flag"
 	"time"
 
-	"github.com/grafana/loki/v3/pkg/dataobj"
+	"github.com/grafana/loki/v3/pkg/dataobj/consumer/logsobj"
 	"github.com/grafana/loki/v3/pkg/dataobj/uploader"
 )
 
 type Config struct {
-	dataobj.BuilderConfig
+	logsobj.BuilderConfig
 	UploaderConfig   uploader.Config `yaml:"uploader"`
 	IdleFlushTimeout time.Duration   `yaml:"idle_flush_timeout"`
 }
 
 func (cfg *Config) Validate() error {
+	if err := cfg.BuilderConfig.Validate(); err != nil {
+		return err
+	}
 	if err := cfg.UploaderConfig.Validate(); err != nil {
 		return err
 	}
-
-	return cfg.BuilderConfig.Validate()
+	return nil
 }
 
 func (cfg *Config) RegisterFlags(f *flag.FlagSet) {
